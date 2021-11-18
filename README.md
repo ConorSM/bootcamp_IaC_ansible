@@ -100,11 +100,15 @@ ansible web -a "systemctl status nginx"
   - name: install mongodb
     apt: pkg=mongodb state=present
 ```
+- run the mongo playbook
+```
+ansible-playbook mongo.yml
+```
 - Check mongodb status
 ```
 ansible db -a "systemctl status mongodb"
 ```
-- Create `nodejs.yml`
+- Create `nodejs.yml` - didn't figure out how to specifically install version 6
 ```
 ---
 #configuring nodejs with required version
