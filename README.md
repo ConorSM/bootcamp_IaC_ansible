@@ -1,6 +1,6 @@
 # Infrastructure as Code with Ansible
 
-### Controller Dependencies
+## Controller Setup
 SSH in box
 ```
 vagrant ssh (box name)
