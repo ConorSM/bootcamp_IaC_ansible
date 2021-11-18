@@ -100,6 +100,10 @@ ansible web -a "systemctl status nginx"
   - name: install mongodb
     apt: pkg=mongodb state=present
 ```
+- Check mongodb status
+```
+ansible db -a "systemctl status mongodb"
+```
 ### Ansible Controller and Agent nodes set up with Vagrant
 ```
 # -*- mode: ruby -*-
