@@ -1,5 +1,5 @@
 # Infrastructure as Code with Ansible
-
+![](images/ansible.png)
 ## Controller Setup
 SSH in box
 ```
@@ -103,6 +103,17 @@ ansible web -a "systemctl status nginx"
 - Check mongodb status
 ```
 ansible db -a "systemctl status mongodb"
+```
+- Create `nodejs.yml`
+```
+---
+#configuring nodejs with required version
+- hosts: web
+  gather_facts: yes
+  become: true
+  tasks:
+  - name: install nodejs
+    apt: pkg=nodejs state=present
 ```
 ### Ansible Controller and Agent nodes set up with Vagrant
 ```
