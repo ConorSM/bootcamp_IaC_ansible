@@ -13,6 +13,7 @@ sudo apt-get install software-properties-common -y
 sudo apt-add-repository ppa:ansible/ansible
 sudo apt-get install ansible -y
 ```
+### Connecting to Servers with Ansible
 To make viewing files easier
 ```
 sudo apt-get install tree -y
