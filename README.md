@@ -1,6 +1,11 @@
 # Infrastructure as Code with Ansible
 
 #### Controller Dependencies
+SSH in box
+```
+vagrant ssh (box name)
+```
+
 ```
 sudo apt-get update -y
 sudo apt-get upgrade -y
