@@ -8,8 +8,15 @@ sudo apt-get install software-properties-common -y
 sudo apt-add-repository ppa:ansible/ansible
 sudo apt-get install ansible -y
 ```
-
-
+To make viewing files easier
+```
+sudo apt-get install tree -y
+```
+To SSH into the different boxes from ansible
+- from the controller /etc/ansible directory
+  ```
+  ssh vagrant@boxIP(in Vagrantfile)
+  ```
 
 
 ### Ansible Controller and Agent nodes set up with Vagrant
