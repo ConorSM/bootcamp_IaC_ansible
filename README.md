@@ -42,7 +42,16 @@ To ping all servers from ansible (/etc/ansible)
 # replace all with name of server to ping individually
 ansible all -m ping
 ```
-
+#### Ansible adhoc commands
+Allow you to run commands on the agent nodes
+e.g.
+```
+ansible web -a "hostnamectl"
+ansible web -a "uname -a"
+ansible db -a "date"
+ansible db -a "free"
+ansible web -m shell -a "ls -a"
+```
 ### Ansible Controller and Agent nodes set up with Vagrant
 ```
 # -*- mode: ruby -*-
