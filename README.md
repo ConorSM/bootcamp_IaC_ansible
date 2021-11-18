@@ -42,7 +42,7 @@ To ping all servers from ansible (/etc/ansible)
 # replace all with name of server to ping individually
 ansible all -m ping
 ```
-#### Ansible adhoc commands
+### Ansible adhoc commands
 Allow you to run commands on the agent nodes from the controller
 e.g.
 ```
