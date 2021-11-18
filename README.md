@@ -19,9 +19,9 @@ To make viewing files easier
 sudo apt-get install tree -y
 ```
 To SSH into the different boxes from ansible from /etc/ansible
- ```
+```
 ssh vagrant@boxIP(in Vagrantfile)
- ```
+```
 
 Add new /etc/ansible/hosts file
 ```
@@ -64,6 +64,7 @@ ansible web -a "sudo apt-get install nginx -y
 ## Ansible Playbook
 - Create new file `nginx.yml` in /etc/ansible
 ```
+---
 # define the agent node's name host name
 
 - hosts: web
@@ -81,10 +82,24 @@ ansible web -a "sudo apt-get install nginx -y
     apt: pkg=nginx state=present
 ```
 - Run the playbook
-  ```
-  ansible-playbook nginx.yml
-  ```
-
+```
+ansible-playbook nginx.yml
+```
+- Check nginx status
+```
+ansible web -a "systemctl status nginx"
+```
+- Create `mongo.yml` in /etc/ansible
+```
+---
+# Configuring Mongodb in our db server to connect web
+- hosts: db
+  gather_facts: yes
+  become: true
+  tasks:
+  - name: install mongodb
+    apt: pkg=mongodb state=present
+```
 ### Ansible Controller and Agent nodes set up with Vagrant
 ```
 # -*- mode: ruby -*-
