@@ -1,6 +1,6 @@
 # Infrastructure as Code with Ansible
 
-#### Controller Dependencies
+### Controller Dependencies
 SSH in box
 ```
 vagrant ssh (box name)
@@ -31,6 +31,15 @@ add into the hosts file
 ```
 [web]
 192.168.33.10 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant 
+
+[db]
+192.168.33.11 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
+
+```
+To ping all servers from ansible (/etc/ansible)
+```
+# replace all with name of server to ping individually
+ansible all -m ping
 ```
 
 ### Ansible Controller and Agent nodes set up with Vagrant
