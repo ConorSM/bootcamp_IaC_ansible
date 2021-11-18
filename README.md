@@ -61,6 +61,30 @@ installing nginx on web server
 ansible web -a "sudo apt-get install nginx -y
 ```
 
+## Ansible Playbook
+- Create new file `nginx.yml` in /etc/ansible
+  ```
+  # define the agent node's name host name
+
+- hosts: web
+
+  # see logs
+  gather_facts: yes
+
+   # sudo permision with become = true
+  become: true
+
+
+   # install nginx on web server
+  tasks:
+  - name: Install nginx
+    apt: pkg=nginx state=present
+  ```
+- Run the playbook
+  ```
+  ansible-playbook nginx.yml
+  ```
+
 ### Ansible Controller and Agent nodes set up with Vagrant
 ```
 # -*- mode: ruby -*-
