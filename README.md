@@ -52,6 +52,15 @@ ansible db -a "date"
 ansible db -a "free"
 ansible web -m shell -a "ls -a"
 ```
+checking uptime of servers
+```
+ansible all -m shell -a uptime
+```
+installing nginx on web server
+```
+ansible web -a "sudo apt-get install nginx -y
+```
+
 ### Ansible Controller and Agent nodes set up with Vagrant
 ```
 # -*- mode: ruby -*-
