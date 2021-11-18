@@ -17,11 +17,10 @@ To make viewing files easier
 ```
 sudo apt-get install tree -y
 ```
-To SSH into the different boxes from ansible
-- from the controller /etc/ansible directory
-  ```
-  ssh vagrant@boxIP(in Vagrantfile)
-  ```
+To SSH into the different boxes from ansible from /etc/ansible
+ ```
+ssh vagrant@boxIP(in Vagrantfile)
+ ```
 
 Add new /etc/ansible/hosts file
 ```
