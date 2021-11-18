@@ -23,6 +23,16 @@ To SSH into the different boxes from ansible
   ssh vagrant@boxIP(in Vagrantfile)
   ```
 
+Add new /etc/ansible/hosts file
+```
+sudo rm -rf hosts
+sudo nano hosts
+```
+add into the hosts file
+```
+[web]
+192.168.33.10 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant 
+```
 
 ### Ansible Controller and Agent nodes set up with Vagrant
 ```
