@@ -64,22 +64,57 @@ ansible web -a "sudo apt-get install nginx -y
 ## Ansible Playbook
 - Create new file `nginx.yml` in /etc/ansible
 ```
+# nginx setup playbook on web with reverse proxy
+
+# Note - ensure the node-app and mongodb required dependencies are available in the specified location---
 ---
-# define the agent node's name host name
-
-- hosts: web
-
-# see logs
-  gather_facts: yes
-
-# sudo permision with become = true
-  become: true
-
-
-# install nginx on web server
-  tasks:
-  - name: Install nginx
-    apt: pkg=nginx state=present
+    - hosts: web
+    
+      gather_facts: true
+    
+      become: true
+    
+      tasks:
+      - name: Install nginx
+        apt: pkg=nginx state=present
+        become_user: root
+    
+      - name: Remove nginx default file (delete file)
+        file:
+          path: /etc/nginx/sites-enabled/default
+          state: absent
+    
+      - name: Touch a file, using symbolic modes to set the permissions (equivalent to 0644)
+        file:
+          path: /etc/nginx/sites-enabled/reverseproxy.conf
+          state: touch
+          mode: '666'
+    
+    
+      - name: Insert multiple lines and Backup
+        blockinfile:
+          path: /etc/nginx/sites-enabled/reverseproxy.conf
+          block: |
+            server{
+              listen 80;
+              server_name development.local;
+              location / {
+                  proxy_pass http://127.0.0.1:3000;
+              }
+            }
+      - name: Create a symbolic link
+        file:
+          src: /etc/nginx/sites-enabled/reverseproxy.conf
+          dest: /etc/nginx/sites-available/reverseproxy.conf
+          state: link
+    
+      - name: nginx bug workaround
+        shell: |
+          sudo mkdir /etc/systemd/system/nginx.service.d
+            printf "[Service]\nExecStartPost=/bin/sleep 0.1\n" | \
+              sudo tee /etc/systemd/system/nginx.service.d/override.conf
+          sudo systemctl daemon-reload
+          sudo systemctl restart nginx
 ```
 - Run the playbook
 ```
@@ -91,14 +126,59 @@ ansible web -a "systemctl status nginx"
 ```
 - Create `mongo.yml` in /etc/ansible
 ```
+# mongodb_setup.yml
+# Note - Ensure the node-app and mongodb required dependencies are available in the specified location
 ---
-# Configuring Mongodb in our db server to connect web
-- hosts: db
-  gather_facts: yes
-  become: true
-  tasks:
-  - name: install mongodb
-    apt: pkg=mongodb state=present
+
+    - hosts: db
+    
+      gather_facts: yes
+    
+      become: true
+    
+      tasks:
+      - name: install mongodb
+        apt: pkg=mongodb state=present
+    
+      - name: Remove mongodb file (delete file)
+        file:
+          path: /etc/mongodb.conf
+          state: absent
+    
+      - name: Touch a file, using symbolic modes to set the permissions (equivalent to 0644)
+        file:
+          path: /etc/mongodb.conf
+          state: touch
+          mode: u=rw,g=r,o=r
+    
+    
+      - name: Insert multiple lines and Backup
+        blockinfile:
+          path: /etc/mongodb.conf
+          block: |
+            # mongodb.conf
+            storage:
+              dbPath: /var/lib/mongodb
+              journal:
+                enabled: true
+            systemLog:
+              destination: file
+              logAppend: true
+              path: /var/log/mongodb/mongod.log
+            net:
+              port: 27017
+              bindIp: 0.0.0.0
+      - name: Restart mongodb
+        become: true
+        shell: systemctl restart mongodb
+    
+      - name: enable mongodb
+        become: true
+        shell: systemctl enable mongodb
+    
+      - name: start mongodb
+        become: true
+        shell: systemctl start mongodb
 ```
 - run the mongo playbook
 ```
@@ -108,16 +188,62 @@ ansible-playbook mongo.yml
 ```
 ansible db -a "systemctl status mongodb"
 ```
-- Create `nodejs.yml` - didn't figure out how to specifically install version 6
+- Create `nodejs.yml`
 ```
+# node_app_playbook.yml
+# This is a YAML file to install node-app onto our web using YAML
 ---
-#configuring nodejs with required version
+
+
+- name: start mongodb
+  import_playbook: mongodb_setup.yml
+
+
+# where do we want to install
+
+
+#  tasks:
+- name: Install nginx
+  import_playbook: nginx_setup.yml
+
+
+# Install node js and NPM
+
 - hosts: web
-  gather_facts: yes
+  gather_facts: true
   become: true
+
+
+
   tasks:
-  - name: install nodejs
+  - name: Install nodejs
     apt: pkg=nodejs state=present
+
+  - name: Install NPM
+    apt: pkg=npm state=present
+
+  - name: download latest npm + Mongoose
+    shell: |
+      npm install -g npm@latest
+      npm install mongoose -y
+# Downloading pm2
+  - name: Install pm2
+    npm:
+      name: pm2
+      global: yes
+
+
+  - name: seed + run app
+    shell: |
+      cd app/
+      npm install
+      node seeds/seed.js
+      pm2 kill
+      pm2 start app.js
+    environment:
+# This is where you enter the environment variable to tell the app where to look for the db
+      DB_HOST: mongodb://ubuntu@<ENTER DB IP HERE>:27017/posts?authSource=admin
+    become_user: root
 ```
 ### Ansible Controller and Agent nodes set up with Vagrant
 ```
